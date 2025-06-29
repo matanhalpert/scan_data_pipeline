@@ -1,0 +1,2 @@
+# This file ensures the simulation_data directory is tracked by Git
+# while the actual data files (*.json) are ignored via .gitignore 
