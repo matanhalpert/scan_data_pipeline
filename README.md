@@ -28,7 +28,15 @@ This pipeline implements several key data engineering patterns:
 - **Configurable Components**: Flexible design allowing future scalability
 - **Error Handling**: Comprehensive logging and recovery mechanisms
 
+## 🗄️ Data Model
+
+The pipeline implements a comprehensive data model that captures digital footprints and their relationships:
+
+![ETL Pipeline ERD](ETL%20pipeline%20scan%20ERD.png)
+
 ## 📊 Pipeline Flow
+
+![ETL Pipeline Flow Chart](ETL%20pipeline%20scan%20Flow%20chart.png)
 
 ### 1. **Simulation Phase**
 Generates synthetic data across two domains: social media platforms and search engines.
