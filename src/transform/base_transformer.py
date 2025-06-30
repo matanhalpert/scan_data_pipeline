@@ -205,7 +205,7 @@ class BaseTransformer(ABC):
         domain = cls._extract_domain_from_url(url)
         
         # First check cache
-        cached_source = RedisManager.get_source_by_url(domain)
+        cached_source = RedisManager.get_source(domain)
         if cached_source:
             logger.debug(f"Found existing source in cache: {domain}")
             return cached_source, False

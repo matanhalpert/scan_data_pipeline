@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Dict, Any
 
 from sqlalchemy import Boolean, Column, Date, DateTime, Enum, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
@@ -36,8 +37,7 @@ class User(Base):
     def __repr__(self):
         return f"<User(id={self.id}, name='{self.first_name} {self.last_name}')>"
 
-    def to_dict(self) -> dict:
-        """Convert the User object and its relationships to a dictionary format."""
+    def to_dict(self) -> Dict[str, Any]:
         return {
             'id': self.id,
             'first_name': self.first_name,
@@ -157,6 +157,43 @@ class DigitalFootprint(Base):
     def __repr__(self):
         return f"<DigitalFootprint(id={self.id}, type='{self.type}', media_filepath='{self.media_filepath}', reference_url='{self.reference_url}', source_id={self.source_id})>"
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'id': self.id,
+            'type': self.type if self.type else None,
+            'media_filepath': self.media_filepath,
+            'reference_url': self.reference_url,
+            'source_id': self.source_id,
+            'personal_identities': [
+                {
+                    'digital_footprint_id': pi.digital_footprint_id,
+                    'personal_identity': pi.personal_identity if pi.personal_identity else None
+                }
+                for pi in self.personal_identities
+            ],
+            'source': {
+                'id': self.source.id,
+                'name': self.source.name,
+                'url': self.source.url,
+                'category': self.source.category if self.source.category else None,
+                'verified': self.source.verified
+            } if self.source else None,
+            'users': [
+                {
+                    'digital_footprint_id': udf.digital_footprint_id,
+                    'user_id': udf.user_id
+                }
+                for udf in self.users
+            ],
+            'activity_logs': [
+                {
+                    'digital_footprint_id': al.digital_footprint_id,
+                    'timestamp': al.timestamp.isoformat() if al.timestamp else None
+                }
+                for al in self.activity_logs
+            ]
+        }
+
 
 class PersonalIdentity(Base):
     __tablename__ = 'personal_identities'
@@ -171,6 +208,19 @@ class PersonalIdentity(Base):
     def __repr__(self):
         return (f"<PersonalIdentity(digital_footprint_id={self.digital_footprint_id}, "
                 f"personal_identity='{self.personal_identity}')>")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'digital_footprint_id': self.digital_footprint_id,
+            'personal_identity': self.personal_identity if self.personal_identity else None,
+            'digital_footprint': {
+                'id': self.digital_footprint.id,
+                'type': self.digital_footprint.type if self.digital_footprint.type else None,
+                'media_filepath': self.digital_footprint.media_filepath,
+                'reference_url': self.digital_footprint.reference_url,
+                'source_id': self.digital_footprint.source_id
+            } if self.digital_footprint else None
+        }
 
 
 class UserDigitalFootprint(Base):
@@ -223,3 +273,22 @@ class Source(Base):
 
     def __repr__(self):
         return f"<Source(id={self.id}, name='{self.name}', url='{self.url}', category='{self.category}', verified={self.verified})>"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'id': self.id,
+            'name': self.name,
+            'url': self.url,
+            'category': self.category if self.category else None,
+            'verified': self.verified,
+            'digital_footprints': [
+                {
+                    'id': df.id,
+                    'type': df.type if df.type else None,
+                    'media_filepath': df.media_filepath,
+                    'reference_url': df.reference_url,
+                    'source_id': df.source_id
+                }
+                for df in self.digital_footprints
+            ]
+        }

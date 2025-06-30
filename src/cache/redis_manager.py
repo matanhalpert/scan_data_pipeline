@@ -5,8 +5,12 @@ import json
 from typing import Optional, Dict, Any
 from datetime import datetime
 import redis
-from src.database.models import User, SecondaryEmail, SecondaryPhone, Address, Picture, UserDigitalFootprint
-from src.config.enums import AddressType
+
+from src.database.models import (
+    User, SecondaryEmail, SecondaryPhone, Address, Picture,
+    UserDigitalFootprint, DigitalFootprint, Source, PersonalIdentity
+)
+from src.config.enums import AddressType, DigitalFootprintType, SourceCategory, PersonalIdentityType
 from src.utils.logger import logger
 from src.config.redis_config import REDIS_CONFIG, CACHE_EXPIRATION
 from src.cache.exceptions import CacheConnectionError, CacheOperationError
@@ -123,7 +127,6 @@ class RedisManager:
             CacheOperationError: If caching operation fails
         """
         try:
-            # Convert User model to dictionary for caching
             user_data: Dict[str, Any] = user.to_dict()
             
             key = f"user:{user.id}"
@@ -134,7 +137,7 @@ class RedisManager:
             raise CacheOperationError(f"Failed to cache User model: {e}")
 
     @classmethod
-    def get_user(cls, user_id: int) -> User:
+    def get_user(cls, user_id: int) -> Optional[User]:
         """
         Retrieve a User model instance from Redis cache.
 
@@ -229,7 +232,7 @@ class RedisManager:
             raise CacheOperationError(f"Failed to remove User from cache: {e}")
 
     @classmethod
-    def set_digital_footprint(cls, digital_footprint) -> None:
+    def set_digital_footprint(cls, digital_footprint: DigitalFootprint) -> None:
         """
         Cache a DigitalFootprint model instance in Redis.
         Uses composite key based on (reference_url, media_filepath) for uniqueness.
@@ -241,14 +244,7 @@ class RedisManager:
             CacheOperationError: If caching operation fails
         """
         try:
-            # Convert DigitalFootprint model to dictionary for caching
-            footprint_data = {
-                'id': digital_footprint.id,
-                'type': digital_footprint.type.value if digital_footprint.type else None,
-                'media_filepath': digital_footprint.media_filepath,
-                'reference_url': digital_footprint.reference_url,
-                'source_id': digital_footprint.source_id,
-            }
+            footprint_data: Dict[str, Any] = digital_footprint.to_dict()
             
             key = f"digital_footprint:{digital_footprint.reference_url}:{digital_footprint.media_filepath or 'no_media'}"
             cls.set_data(key, footprint_data, CACHE_EXPIRATION['digital_footprint'])
@@ -258,7 +254,7 @@ class RedisManager:
             raise CacheOperationError(f"Failed to cache DigitalFootprint model: {e}")
 
     @classmethod
-    def get_digital_footprint(cls, reference_url: str, media_filepath: str = None):
+    def get_digital_footprint(cls, reference_url: str, media_filepath: str = None) -> Optional[DigitalFootprint]:
         """
         Retrieve a DigitalFootprint from Redis cache using composite key.
 
@@ -277,10 +273,6 @@ class RedisManager:
             footprint_data = cls.get_data(key)
             if footprint_data is None:
                 return None
-            
-            # Import here to avoid circular imports
-            from src.database.models import DigitalFootprint
-            from src.config.enums import DigitalFootprintType
             
             # Create DigitalFootprint instance
             digital_footprint = DigitalFootprint(
@@ -319,7 +311,7 @@ class RedisManager:
             raise CacheOperationError(f"Failed to remove DigitalFootprint from cache: {e}")
 
     @classmethod
-    def set_source(cls, source) -> None:
+    def set_source(cls, source: Source) -> None:
         """
         Cache a Source model instance in Redis.
 
@@ -330,14 +322,7 @@ class RedisManager:
             CacheOperationError: If caching operation fails
         """
         try:
-            # Convert Source model to dictionary for caching
-            source_data = {
-                'id': source.id,
-                'name': source.name,
-                'url': source.url,
-                'category': source.category.value if source.category else None,
-                'verified': source.verified,
-            }
+            source_data: Dict[str, Any] = source.to_dict()
             
             key = f"source:{source.url}"
             cls.set_data(key, source_data, CACHE_EXPIRATION['source'])
@@ -347,12 +332,12 @@ class RedisManager:
             raise CacheOperationError(f"Failed to cache Source model: {e}")
 
     @classmethod
-    def get_source_by_url(cls, url: str):
+    def get_source(cls, source_url: str) -> Optional[Source]:
         """
         Retrieve a Source from Redis cache by URL.
 
         Args:
-            url: The source URL
+            source_url: The source URL
 
         Returns:
             Source: Source model instance if found, None otherwise
@@ -361,14 +346,10 @@ class RedisManager:
             CacheOperationError: If retrieval operation fails
         """
         try:
-            key = f"source:{url}"
+            key = f"source:{source_url}"
             source_data = cls.get_data(key)
             if source_data is None:
                 return None
-            
-            # Import here to avoid circular imports
-            from src.database.models import Source
-            from src.config.enums import SourceCategory
             
             # Create Source instance
             source = Source(
@@ -379,7 +360,7 @@ class RedisManager:
                 verified=source_data["verified"]
             )
             
-            logger.debug(f"Retrieved Source from cache for url: {url}")
+            logger.debug(f"Retrieved Source from cache for url: {source_url}")
             return source
             
         except Exception as e:
@@ -406,7 +387,7 @@ class RedisManager:
             raise CacheOperationError(f"Failed to remove Source from cache: {e}")
 
     @classmethod
-    def set_personal_identity(cls, personal_identity) -> None:
+    def set_personal_identity(cls, personal_identity: PersonalIdentity) -> None:
         """
         Cache a PersonalIdentity model instance in Redis.
         Uses composite key: {digital_footprint_id}:{personal_identity_value}
@@ -419,12 +400,9 @@ class RedisManager:
         """
         try:
             # Convert PersonalIdentity model to dictionary for caching
-            identity_data = {
-                'digital_footprint_id': personal_identity.digital_footprint_id,
-                'personal_identity': personal_identity.personal_identity.value if personal_identity.personal_identity else None,
-            }
+            identity_data: Dict[str, Any] = personal_identity.to_dict()
             
-            key = f"personal_identity:{personal_identity.digital_footprint_id}:{personal_identity.personal_identity.value if personal_identity.personal_identity else 'no_identity'}"
+            key = f"personal_identity:{personal_identity.digital_footprint_id}:{personal_identity.personal_identity}"
             cls.set_data(key, identity_data, CACHE_EXPIRATION['personal_identity'])
             logger.debug(f"Cached PersonalIdentity for digital_footprint_id: {personal_identity.digital_footprint_id}")
         except Exception as e:
@@ -432,7 +410,7 @@ class RedisManager:
             raise CacheOperationError(f"Failed to cache PersonalIdentity model: {e}")
 
     @classmethod
-    def get_personal_identity(cls, digital_footprint_id: int, personal_identity_value: str):
+    def get_personal_identity(cls, digital_footprint_id: int, personal_identity_value: str) -> Optional[PersonalIdentity]:
         """
         Retrieve a PersonalIdentity from Redis cache using composite key.
 
@@ -452,14 +430,10 @@ class RedisManager:
             if identity_data is None:
                 return None
             
-            # Import here to avoid circular imports
-            from src.database.models import PersonalIdentity
-            from src.config.enums import PersonalIdentityType
-            
             # Create PersonalIdentity instance
             personal_identity = PersonalIdentity(
                 digital_footprint_id=identity_data["digital_footprint_id"],
-                personal_identity=PersonalIdentityType(identity_data["personal_identity"]) if identity_data["personal_identity"] else None
+                personal_identity=PersonalIdentityType(identity_data["personal_identity"])
             )
             
             logger.debug(f"Retrieved PersonalIdentity from cache for digital_footprint_id: {digital_footprint_id}")
