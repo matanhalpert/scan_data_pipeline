@@ -25,6 +25,10 @@ class ImageSuffix(StrEnum):
     JPEG = '.jpeg'
     GIF = '.gif'
 
+    @classmethod
+    def has_value(cls, value: str) -> bool:
+        return value.lower() in [suffix for suffix in cls]
+
 
 class VideoSuffix(StrEnum):
     MP4 = '.mp4'
