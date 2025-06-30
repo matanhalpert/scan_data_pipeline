@@ -2,13 +2,13 @@
 Redis manager for handling caching operations.
 """
 import json
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime
 import redis
 
 from src.database.models import (
     User, SecondaryEmail, SecondaryPhone, Address, Picture,
-    UserDigitalFootprint, DigitalFootprint, Source, PersonalIdentity
+    UserDigitalFootprint, DigitalFootprint, Source, PersonalIdentity, ActivityLog
 )
 from src.config.enums import AddressType, DigitalFootprintType, SourceCategory, PersonalIdentityType
 from src.utils.logger import logger
@@ -283,6 +283,44 @@ class RedisManager:
                 source_id=footprint_data["source_id"]
             )
             
+            # Reconstruct personal_identities relationship
+            digital_footprint.personal_identities = [
+                PersonalIdentity(
+                    digital_footprint_id=pi_data["digital_footprint_id"],
+                    personal_identity=PersonalIdentityType(pi_data["personal_identity"])
+                )
+                for pi_data in footprint_data.get("personal_identities", [])
+            ]
+            
+            # Reconstruct source relationship
+            source_data = footprint_data.get("source")
+            if source_data:
+                digital_footprint.source = Source(
+                    id=source_data["id"],
+                    name=source_data["name"],
+                    url=source_data["url"],
+                    category=SourceCategory(source_data["category"]) if source_data["category"] else None,
+                    verified=source_data["verified"]
+                )
+            
+            # Reconstruct users relationship
+            digital_footprint.users = [
+                UserDigitalFootprint(
+                    digital_footprint_id=udf_data["digital_footprint_id"],
+                    user_id=udf_data["user_id"]
+                )
+                for udf_data in footprint_data.get("users", [])
+            ]
+            
+            # Reconstruct activity_logs relationship
+            digital_footprint.activity_logs = [
+                ActivityLog(
+                    digital_footprint_id=al_data["digital_footprint_id"],
+                    timestamp=datetime.fromisoformat(al_data["timestamp"]) if al_data["timestamp"] else None
+                )
+                for al_data in footprint_data.get("activity_logs", [])
+            ]
+            
             logger.debug(f"Retrieved DigitalFootprint from cache for reference_url: {reference_url}")
             return digital_footprint
             
@@ -360,6 +398,18 @@ class RedisManager:
                 verified=source_data["verified"]
             )
             
+            # Reconstruct digital_footprints relationship
+            source.digital_footprints = [
+                DigitalFootprint(
+                    id=df_data["id"],
+                    type=DigitalFootprintType(df_data["type"]) if df_data["type"] else None,
+                    media_filepath=df_data["media_filepath"],
+                    reference_url=df_data["reference_url"],
+                    source_id=df_data["source_id"]
+                )
+                for df_data in source_data.get("digital_footprints", [])
+            ]
+            
             logger.debug(f"Retrieved Source from cache for url: {source_url}")
             return source
             
@@ -435,6 +485,17 @@ class RedisManager:
                 digital_footprint_id=identity_data["digital_footprint_id"],
                 personal_identity=PersonalIdentityType(identity_data["personal_identity"])
             )
+            
+            # Reconstruct digital_footprint relationship
+            df_data = identity_data.get("digital_footprint")
+            if df_data:
+                personal_identity.digital_footprint = DigitalFootprint(
+                    id=df_data["id"],
+                    type=DigitalFootprintType(df_data["type"]) if df_data["type"] else None,
+                    media_filepath=df_data["media_filepath"],
+                    reference_url=df_data["reference_url"],
+                    source_id=df_data["source_id"]
+                )
             
             logger.debug(f"Retrieved PersonalIdentity from cache for digital_footprint_id: {digital_footprint_id}")
             return personal_identity
