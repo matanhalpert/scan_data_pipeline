@@ -13,6 +13,7 @@ This pipeline implements several key data engineering patterns:
 
 - **ETL Architecture**: Clear separation of Extract, Transform, Load phases
 - **Concurrent Processing**: Async/await patterns for improved throughput
+- **Batch Processing**: Process data in chunks to improve efficiency and resource usage
 - **ORM Usage**: Complex relationships with SQLAlchemy
 - **Caching Layer**: Redis integration for performance optimization
 - **File & Media Handling**: A file management layer for efficient and reliable interactions with files
