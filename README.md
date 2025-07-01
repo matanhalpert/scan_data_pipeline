@@ -4,16 +4,8 @@ A comprehensive data engineering pipeline that demonstrates the integration of s
 
 ## 🎯 Project Purpose
 
-This is an **ETL pipeline**  which was built to solve a real world problem - scanning and keeping track of our unwanted digital footprints across the web. Also, this project was created in order to explore and demonstrate how different components and tools can be composed into a complete, working system. The project ties together:
-
-- **Data Simulation**: Synthetic generation of social media and search engine data
-- **Concurrent Processing**: Async extraction and transformation workflows  
-- **ORM Integration**: SQLAlchemy with relationship modeling
-- **Caching Strategy**: Redis-based performance optimization
-- **Media Analysis**: Face recognition and video transcription capabilities
-- **Clean Architecture**: Modular design across simulation → extraction → transformation → load phases
-
-The focus is on **learning, experimentation, and modular extension** rather than production deployment.
+This is an **ETL pipeline**  which was built to solve a real world problem - scanning and keeping track of our unwanted digital footprints across the web. Also, this project was created in order to explore and demonstrate how different components and tools can be composed into a complete, working system.
+The focus is on **learning** and **experimentation**, rather than production deployment.
 
 ## 🏗️ Core Concepts Demonstrated
 
@@ -21,16 +13,19 @@ This pipeline implements several key data engineering patterns:
 
 - **ETL Architecture**: Clear separation of Extract, Transform, Load phases
 - **Concurrent Processing**: Async/await patterns for improved throughput
-- **ORM Usage**: Complex relationships and batch operations with SQLAlchemy
+- **ORM Usage**: Complex relationships with SQLAlchemy
 - **Caching Layer**: Redis integration for performance optimization
-- **File & Media Handling**: Processing images and videos with AI-powered analysis
-- **Custom Logic**: Face matching, video transcription, and identity detection
+- **File & Media Handling**: A file management layer for efficient and reliable interactions with files
 - **Configurable Components**: Flexible design allowing future scalability
 - **Error Handling**: Comprehensive logging and recovery mechanisms
 
+Bonus Features: Media-Aware Capabilities
+- **Face Detection**: Integrates computer vision techniques to identify faces in images and video frames
+- **Video Audio Transcription**: Uses speech to text processing to extract spoken content from videos, enabling keyword analysis and user identity insights
+
 ## 🗄️ Data Model
 
-The pipeline implements a comprehensive data model that captures digital footprints and their relationships:
+The pipeline is based on a comprehensive data model that captures digital footprints and their relationships - those are shown in the following ERD (Entity Relationship Diagram):
 
 ![ETL Pipeline ERD](ETL%20pipeline%20scan%20ERD.png)
 
