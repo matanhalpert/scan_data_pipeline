@@ -4,7 +4,7 @@ A comprehensive data engineering pipeline that demonstrates the integration of s
 
 ## 🎯 Project Purpose
 
-This is a **personal data engineering pipeline** built to explore and demonstrate how different components can be composed into a complete, working system. The project ties together:
+This is an **ETL pipeline**  which was built to solve a real world problem - scanning and keeping track of our unwanted digital footprints across the web. Also, this project was created in order to explore and demonstrate how different components and tools can be composed into a complete, working system. The project ties together:
 
 - **Data Simulation**: Synthetic generation of social media and search engine data
 - **Concurrent Processing**: Async extraction and transformation workflows  
