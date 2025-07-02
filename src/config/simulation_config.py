@@ -27,6 +27,13 @@ SOCIAL_MEDIA_PLATFORMS_CONFIG = {
     },
 }
 
+DEFAULT_PLATFORM_CONFIG = {
+    'user_chance': 0.5,
+    'text_only_posts_range': (1, 5),
+    'image_posts_range': (1, 5),
+    'video_posts_range': (0, 2),
+}
+
 SEARCH_ENGINES_CONFIG = {
     SearchEngine.GOOGLE: {
         'results_chance': 0.8,
@@ -52,11 +59,4 @@ SEARCH_ENGINES_CONFIG = {
         'webpage_results_range': (1, 5),
         'pdf_results_range': (0, 2)
     }
-}
-
-DEFAULT_PLATFORM_CONFIG = {
-    'user_chance': 0.5,
-    'text_only_posts_range': (1, 5),
-    'image_posts_range': (1, 5),
-    'video_posts_range': (0, 2),
 }

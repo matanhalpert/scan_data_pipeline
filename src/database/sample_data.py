@@ -32,37 +32,37 @@ def insert_sample_data():
             {
                 "name": "Facebook",
                 "url": dv.validate_url("https://facebook.com"),
-                "category": dv.validate_source_category("social_media"),
+                "category": dv.validate_source_category(SourceCategory.SOCIAL_MEDIA),
                 "verified": True
             },
             {
                 "name": "Instagram",
                 "url": dv.validate_url("https://instagram.com"),
-                "category": dv.validate_source_category("social_media"),
+                "category": dv.validate_source_category(SourceCategory.SOCIAL_MEDIA),
                 "verified": True
             },
             {
                 "name": "LinkedIn",
                 "url": dv.validate_url("https://linkedin.com"),
-                "category": dv.validate_source_category("professional"),
+                "category": dv.validate_source_category(SourceCategory.PROFESSIONAL),
                 "verified": True
             },
             {
                 "name": "Twitter",
                 "url": dv.validate_url("https://twitter.com"),
-                "category": dv.validate_source_category("social_media"),
+                "category": dv.validate_source_category(SourceCategory.SOCIAL_MEDIA),
                 "verified": True
             },
             {
                 "name": "GitHub",
                 "url": dv.validate_url("https://github.com"),
-                "category": dv.validate_source_category("professional"),
+                "category": dv.validate_source_category(SourceCategory.PROFESSIONAL),
                 "verified": True
             },
             {
                 "name": "Personal Blog",
                 "url": dv.validate_url("https://example-blog.com"),
-                "category": dv.validate_source_category("personal"),
+                "category": dv.validate_source_category(SourceCategory.PERSONAL),
                 "verified": False
             },
         ]
@@ -171,7 +171,7 @@ def insert_sample_data():
         addresses = [
             Address(
                 user_id=users[0].id,
-                type=dv.validate_address_type("home"),
+                type=dv.validate_address_type(AddressType.HOME),
                 country="USA",
                 city="New York",
                 street="Broadway",
@@ -179,7 +179,7 @@ def insert_sample_data():
             ),
             Address(
                 user_id=users[0].id,
-                type=dv.validate_address_type("work"),
+                type=dv.validate_address_type(AddressType.WORK),
                 country="USA",
                 city="New York",
                 street="Wall St",
@@ -187,7 +187,7 @@ def insert_sample_data():
             ),
             Address(
                 user_id=users[1].id,
-                type=dv.validate_address_type("home"),
+                type=dv.validate_address_type(AddressType.HOME),
                 country="USA",
                 city="Los Angeles",
                 street="Sunset Blvd",
@@ -195,7 +195,7 @@ def insert_sample_data():
             ),
             Address(
                 user_id=users[2].id,
-                type=dv.validate_address_type("home"),
+                type=dv.validate_address_type(AddressType.HOME),
                 country="USA",
                 city="Chicago",
                 street="Michigan Ave",
@@ -203,7 +203,7 @@ def insert_sample_data():
             ),
             Address(
                 user_id=users[3].id,
-                type=dv.validate_address_type("home"),
+                type=dv.validate_address_type(AddressType.HOME),
                 country="USA",
                 city="Boston",
                 street="Commonwealth Ave",
@@ -238,13 +238,13 @@ def insert_sample_data():
         footprints_data = [
             # John Doe - Facebook
             {
-                "type": dv.validate_digital_footprint_type("text"),
+                "type": dv.validate_digital_footprint_type(DigitalFootprintType.TEXT),
                 "media_filepath": None,
                 "reference_url": dv.validate_url("https://facebook.com/john.doe.profile"),
                 "source_id": sources[0].id  # Facebook
             },
             {
-                "type": dv.validate_digital_footprint_type("image"),
+                "type": dv.validate_digital_footprint_type(DigitalFootprintType.IMAGE),
                 "media_filepath": "src/media/images/mock_image.jpg",
                 "reference_url": dv.validate_url("https://facebook.com/john.doe.photo1"),
                 "source_id": sources[0].id
@@ -252,13 +252,13 @@ def insert_sample_data():
             
             # Jane Smith - Instagram
             {
-                "type": dv.validate_digital_footprint_type("text"),
+                "type": dv.validate_digital_footprint_type(DigitalFootprintType.TEXT),
                 "media_filepath": None,
                 "reference_url": dv.validate_url("https://instagram.com/jane.smith.profile"),
                 "source_id": sources[1].id  # Instagram
             },
             {
-                "type": dv.validate_digital_footprint_type("image"),
+                "type": dv.validate_digital_footprint_type(DigitalFootprintType.IMAGE),
                 "media_filepath": "src/media/images/mock_image.png",
                 "reference_url": dv.validate_url("https://instagram.com/jane.smith.photo1"),
                 "source_id": sources[1].id
@@ -266,7 +266,7 @@ def insert_sample_data():
             
             # Mike Johnson - LinkedIn
             {
-                "type": dv.validate_digital_footprint_type("text"),
+                "type": dv.validate_digital_footprint_type(DigitalFootprintType.TEXT),
                 "media_filepath": None,
                 "reference_url": dv.validate_url("https://linkedin.com/in/mike.johnson"),
                 "source_id": sources[2].id  # LinkedIn
@@ -274,7 +274,7 @@ def insert_sample_data():
             
             # Sarah Williams - GitHub
             {
-                "type": dv.validate_digital_footprint_type("text"),
+                "type": dv.validate_digital_footprint_type(DigitalFootprintType.TEXT),
                 "media_filepath": None,
                 "reference_url": dv.validate_url("https://github.com/sarah.williams"),
                 "source_id": sources[4].id  # GitHub

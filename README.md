@@ -11,7 +11,7 @@ The focus is on **learning** and **experimentation**, rather than production dep
 
 A **digital footprint** refers to the traceable data left behind by a person’s online activity. This can include personal information, media files, links to public sources, or references from third-party platforms. In this system, each digital footprint is structured as a record that may include:
 
-- **Personal identity clues** such as names, emails, or photo
+- **Personal identity clues** such as names, emails, locations or photo
 - **Media references**, including file paths or URLs pointing to external content
 - **Source metadata**, like the origin of the data and its verification status
 - **Activity logs**, capturing when the data was found

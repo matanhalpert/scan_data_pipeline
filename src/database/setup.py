@@ -131,15 +131,6 @@ class DatabaseManager:
             logger.info("Database engine disposed")
 
 
-# Expose the session getter for backwards compatibility
-def get_session():
-    return DatabaseManager.get_session()
-
-
-# For backwards compatibility
-Session = get_session
-
-
 if __name__ == "__main__":
     try:
         DatabaseManager.create_tables()
