@@ -7,6 +7,15 @@ A comprehensive data engineering pipeline that demonstrates the integration of s
 This is an **ETL pipeline**  which was built to solve a real world problem - scanning and keeping track of our unwanted digital footprints across the web. Also, this project was created in order to explore and demonstrate how different components and tools can be composed into a complete, working system.
 The focus is on **learning** and **experimentation**, rather than production deployment.
 
+## 🌐 What Is a Digital Footprint?
+
+A **digital footprint** refers to the traceable data left behind by a person’s online activity. This can include personal information, media files, links to public sources, or references from third-party platforms. In this system, each digital footprint is structured as a record that may include:
+
+- **Personal identity clues** such as names, emails, or photo
+- **Media references**, including file paths or URLs pointing to external content
+- **Source metadata**, like the origin of the data and its verification status
+- **Activity logs**, capturing when the data was found
+
 ## 🏗️ Core Concepts Demonstrated
 
 This pipeline implements several key data engineering patterns:
