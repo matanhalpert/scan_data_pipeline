@@ -1,5 +1,4 @@
 import os
-import uuid
 from pathlib import Path
 from src.config.enums import FileMediaType, ImageSuffix, VideoSuffix
 from typing import Union, Optional
@@ -13,19 +12,21 @@ class FileManager:
     IMAGE_DIR = MEDIA_DIR / "images"
     VIDEO_DIR = MEDIA_DIR / "videos"
 
-    # Multiple mock files for different formats
-    MOCK_FILES = {
-        ImageSuffix.PNG: IMAGE_DIR / 'mock_image.png',
-        ImageSuffix.JPG: IMAGE_DIR / 'mock_image.jpg',
-        ImageSuffix.JPEG: IMAGE_DIR / 'mock_image.jpeg',
-        ImageSuffix.GIF: IMAGE_DIR / 'mock_image.gif',
-        VideoSuffix.MP4: VIDEO_DIR / 'mock_video.mp4',
-        VideoSuffix.AVI: VIDEO_DIR / 'mock_video.avi',
-        VideoSuffix.MKV: VIDEO_DIR / 'mock_video.mkv',
-        VideoSuffix.WMV: VIDEO_DIR / 'mock_video.wmv',
-    }
+    @classmethod
+    def get_mock_images(cls):
+        return [cls.IMAGE_DIR / f"mock_image{suffix}" for suffix in list(ImageSuffix)]
 
-    PROTECTED_FILES = list(MOCK_FILES.values())
+    @classmethod
+    def get_mock_videos(cls):
+        return [cls.VIDEO_DIR / f"mock_video{suffix}" for suffix in list(VideoSuffix)]
+
+    @classmethod
+    def get_readme_images(cls):
+        return [cls.IMAGE_DIR / 'ETL pipeline scan ERD.png', cls.IMAGE_DIR / 'ETL pipeline scan Flow chart.png']
+
+    @classmethod
+    def get_protected_files(cls):
+        return cls.get_mock_images() + cls.get_mock_videos() + cls.get_readme_images()
 
     @staticmethod
     def is_supported_format(suffix: Union[ImageSuffix, VideoSuffix, str], media_type: FileMediaType) -> bool:
@@ -103,18 +104,18 @@ class FileManager:
     def delete_media(filename: str, directory: Union[str, Path]) -> bool:
         """
         Delete a file with the specified name from the given directory.
-        
+
         Args:
             filename (str): Name of the file with extension (e.g. 'image.jpg' or 'video.mp4')
             directory (Union[str, Path]): Directory containing the file
-            
+
         Returns:
             bool: True if file was deleted successfully, False otherwise
         """
         try:
             # Construct the filepath
             filepath = os.path.join(directory, filename)
-            
+
             # Check if file exists before attempting to delete
             if os.path.exists(filepath):
                 os.remove(filepath)
@@ -128,7 +129,7 @@ class FileManager:
             return False
 
     @classmethod
-    def clear_media_files(cls, directory: Union[str, Path] = MEDIA_DIR) -> bool:
+    def clear_media_files(cls, directory: Union[str, Path] = None) -> bool:
         """
         Clear all media files (images and videos) from the specified directory and its subdirectories,
         while preserving the directory structure. Only deletes files with supported media suffixes.
@@ -140,6 +141,10 @@ class FileManager:
             bool: True if operation was successful, False if any errors occurred
         """
         try:
+            # Use class variable as default if no directory provided
+            if directory is None:
+                directory = cls.MEDIA_DIR
+
             directory = Path(directory)
             if not directory.exists():
                 logger.warning(f"Directory does not exist: {directory}")
@@ -150,9 +155,8 @@ class FileManager:
             for root, _, files in os.walk(directory):
                 for file in files:
                     current_file_path = Path(root) / file
-                    
-                    # Check if the file is in the skip list
-                    if current_file_path in cls.PROTECTED_FILES:
+
+                    if current_file_path in cls.get_protected_files():
                         logger.info(f"Skipping protected file: {current_file_path}")
                         continue
 
@@ -164,8 +168,8 @@ class FileManager:
                     is_video = cls.is_supported_format(file_suffix, FileMediaType.VIDEO)
 
                     if is_image or is_video:
-                        image_deleted: bool = cls.delete_media(filename=file, directory=root)
-                        if not image_deleted:
+                        file_deleted: bool = cls.delete_media(filename=file, directory=root)
+                        if not file_deleted:
                             success = False
                     else:
                         logger.debug(f"Skipping non-media file: {file}")
@@ -174,3 +178,7 @@ class FileManager:
         except Exception as e:
             logger.error(f"Error clearing files: {str(e)}")
             return False
+
+
+if __name__ == '__main__':
+    FileManager.clear_media_files()

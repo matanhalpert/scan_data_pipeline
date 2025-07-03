@@ -37,11 +37,11 @@ Bonus Features: Media-Aware Capabilities
 
 The pipeline is based on a comprehensive data model that captures digital footprints and their relationships - those are shown in the following ERD (Entity Relationship Diagram):
 
-![ETL Pipeline ERD](ETL%20pipeline%20scan%20ERD.png)
+![ETL Pipeline ERD](src/media/images/ETL%20pipeline%20scan%20ERD.png)
 
 ## 📊 Pipeline Flow
 
-![ETL Pipeline Flow Chart](ETL%20pipeline%20scan%20Flow%20chart.png)
+![ETL Pipeline Flow Chart](src/media/images/ETL%20pipeline%20scan%20Flow%20chart.png)
 
 ### 1. **Simulation Phase**
 Generates synthetic data across two domains: social media platforms and search engines.

@@ -8,7 +8,7 @@ from src.database.models import (
 from src.config.enums import SourceCategory, DigitalFootprintType, AddressType, PersonalIdentityType
 from src.validation.validation import DataValidator
 from src.utils.logger import logger
-from src.database.setup import get_session
+from src.database.setup import DatabaseManager
 
 
 ALLOWED_EXTENSIONS = ["jpg", "png", "wav", "mp3", "mp4", "json", "zip"]
@@ -16,7 +16,7 @@ ALLOWED_EXTENSIONS = ["jpg", "png", "wav", "mp3", "mp4", "json", "zip"]
 
 def insert_sample_data():
     """Inserts sample data into the database for development and testing."""
-    session = get_session()
+    session = DatabaseManager.get_session()
     dv = DataValidator()
     
     try:
@@ -241,13 +241,15 @@ def insert_sample_data():
                 "type": dv.validate_digital_footprint_type(DigitalFootprintType.TEXT),
                 "media_filepath": None,
                 "reference_url": dv.validate_url("https://facebook.com/john.doe.profile"),
-                "source_id": sources[0].id  # Facebook
+                "source_id": sources[0].id,  # Facebook
+                "generate_id": True
             },
             {
                 "type": dv.validate_digital_footprint_type(DigitalFootprintType.IMAGE),
                 "media_filepath": "src/media/images/mock_image.jpg",
                 "reference_url": dv.validate_url("https://facebook.com/john.doe.photo1"),
-                "source_id": sources[0].id
+                "source_id": sources[0].id,
+                "generate_id": True
             },
             
             # Jane Smith - Instagram

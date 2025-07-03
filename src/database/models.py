@@ -1,6 +1,8 @@
 from functools import partial
 from typing import Dict, Any
 
+import hashlib
+
 from sqlalchemy import Boolean, Column, Date, DateTime, Enum, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -153,6 +155,32 @@ class DigitalFootprint(Base):
     source = relationship("Source", back_populates="digital_footprints")
     users = relationship("UserDigitalFootprint", back_populates="digital_footprint", cascade="all, delete-orphan")
     activity_logs = relationship("ActivityLog", back_populates="digital_footprint", cascade="all, delete-orphan")
+
+    def __init__(self, type, reference_url, source_id, media_filepath=None,
+                 generate_id=False, **kwargs):
+        """Initialize DigitalFootprint instance."""
+        super().__init__(**kwargs)
+
+        self.type = type
+        self.reference_url = reference_url
+        self.source_id = source_id
+        self.media_filepath = media_filepath
+
+        if generate_id:
+            self.id = self._generate_hash_id()
+
+    def _generate_hash_id(self) -> int:
+        """Generate a hash-based ID from reference_url and media_filepath."""
+        combined_string = f"{self.reference_url}{self.media_filepath or ''}"
+
+        # Create SHA-256 hash
+        hash_object = hashlib.sha256(combined_string.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
+
+        # Convert first 8 characters of hex to integer (reasonable size)
+        hash_int = int(hash_hex[:7], 16)
+
+        return hash_int
 
     def __repr__(self):
         return f"<DigitalFootprint(id={self.id}, type='{self.type}', media_filepath='{self.media_filepath}', reference_url='{self.reference_url}', source_id={self.source_id})>"
