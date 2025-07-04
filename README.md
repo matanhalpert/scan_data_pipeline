@@ -138,21 +138,26 @@ print(f"Inserted {summary.get('total_records_inserted', 0)} records")
 ## 🚀 Complete Pipeline Usage
 
 ```python
-from run_scan import run_scan
+from run_scan import load_and_get_subject_user, run_scan
 
-# Execute the full ETL pipeline
-results = run_scan(
-    test_num=1,
-    base_users_count=50,  # Adjust based on testing needs
-    profile_image_path="src/media/images/mock_image.png"
+# Create a subject user for scanning
+subject_user = load_and_get_subject_user(
+    first_name='rocky',
+    last_name='balaboa',
+    email='rocky.balboa@example.com',
+    password='examplepassword123',
+    phone='+12125559903',
+    birth_date='1992-10-03'
 )
 
+# Execute the full ETL pipeline
+results = run_scan(subject_user)
+
 # Pipeline automatically coordinates:
-# 1. User creation and database setup
-# 2. Simulation world generation
-# 3. Concurrent extraction from all sources  
-# 4. Advanced transformation with media analysis
-# 5. Database loading with relationship management
+# 1. Simulation world generation (20 base users + subject user)
+# 2. Extraction from all sources  
+# 3. Transformation with media analysis
+# 4. Database loading with relationship management
 
 print(f"Pipeline completed: {results['pipeline_success']}")
 print(f"Records inserted: {results['load']['total_records_inserted']}")
